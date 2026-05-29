@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+multipart
+python-multipart
+unstructured
