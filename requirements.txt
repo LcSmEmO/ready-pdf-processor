@@ -1,5 +1,7 @@
 fastapi
 uvicorn
-multipart
 python-multipart
-unstructured
+unstructured[pdf]
+pdfminer.six
+pikepdf
+pypdf
