@@ -6,7 +6,7 @@ import re
 
 app = FastAPI()
 
-# Function to fix duplicated letters in the text
+#Function to fix duplicated letters in the text
 def fix_duplicated_letters(text: str) -> str:
     words = text.split()
     fixed_words = []
@@ -54,13 +54,14 @@ def fix_duplicated_letters(text: str) -> str:
 
     return " ".join(fixed_words)
 
-# Function to fix hyphenated words in the text
+#Function to fix hyphenated words in the text
 def fix_hyphenated_words(text: str) -> str:
     # Corrige casos como: afir- mo -> afirmo
     text = re.sub(r"(\w)-\s+(\w)", r"\1\2", text)
+
     return text
 
-# Function to clean the extracted text by fixing duplicated letters, hyphenated words, and normalizing whitespace
+#Function to clean the extracted text by fixing duplicated letters, hyphenated words, and normalizing whitespace
 def clean_extracted_text(text: str) -> str:
     ligature_replacements = {
         "ﬁ": "fi",
@@ -79,7 +80,7 @@ def clean_extracted_text(text: str) -> str:
 
     return text
 
-# Function to determine if a text block is likely a page number based on its content and the page number metadata
+#Function to determine if a text block is likely a page number based on its content and the page number metadata
 def is_page_number_block(text: str, page: int | None) -> bool:
     clean = text.strip()
 
@@ -91,7 +92,7 @@ def is_page_number_block(text: str, page: int | None) -> bool:
 
     return int(clean) == page or len(clean) <= 3
 
-# Function to remove trailing page numbers from text blocks, while preserving titles and common references
+#Function to remove trailing page numbers from text blocks, while preserving titles and common references
 def remove_trailing_page_number(text: str, category: str) -> str:
     clean = text.strip()
 
@@ -112,7 +113,7 @@ def remove_trailing_page_number(text: str, category: str) -> str:
 
     return clean
 
-# Function to map the block type based on the category
+#Function to map the block type based on the category
 def map_block_type(category: str) -> str:
     types = {
         "Title": "title",
@@ -126,7 +127,7 @@ def map_block_type(category: str) -> str:
 
     return types.get(category, "text")
 
-# Function to determine if a text block is likely a footnote based on its content and common patterns
+#Function to determine if a text block is likely a footnote based on its content and common patterns
 def is_footnote_block(text: str) -> bool:
     clean = text.strip()
 
@@ -141,7 +142,7 @@ def is_footnote_block(text: str) -> bool:
 
     return False
 
-# Function to determine if a text block is likely garbage based on its content, category, and common patterns of noise in OCR'd PDFs
+#Function to determine if a text block is likely garbage based on its content, category, and common patterns of noise in OCR'd PDFs
 def is_garbage_block(text: str, category: str) -> bool:
     clean = text.strip()
 
@@ -183,7 +184,11 @@ def is_garbage_block(text: str, category: str) -> bool:
 
     return False
 
-# Endpoint to process the uploaded PDF file and return the structured data
+
+
+
+
+#Endpoint to process the uploaded PDF file and return the structured data
 @app.post("/process-pdf")
 async def process_pdf(file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
@@ -197,6 +202,8 @@ async def process_pdf(file: UploadFile = File(...)):
 
         for index, element in enumerate(elements):
             metadata = element.metadata.to_dict() if element.metadata else {}
+
+            #print(element.category, "=>", str(element))
 
             if element.category == "PageNumber":
                 continue
@@ -218,7 +225,7 @@ async def process_pdf(file: UploadFile = File(...)):
             block_type = map_block_type(element.category)
 
             if is_footnote_block(processed_text):
-                block_type = "footnote"
+              block_type = "footnote"
 
             result.append({
                 "order": index + 1,
